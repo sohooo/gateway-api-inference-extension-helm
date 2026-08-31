@@ -1,0 +1,69 @@
+name: Sync upstream releases
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.detect.outputs.versions }}
+      found: ${{ steps.detect.outputs.found }}
+    steps:
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
+
+      - name: Find unpublished stable releases
+        id: detect
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MINIMUM_VERSION: v1.6.0
+        run: |
+          releases=$(gh api --paginate repos/kubernetes-sigs/gateway-api-inference-extension/releases | \
+            jq -r '.[] | select(.draft == false and .prerelease == false) | select(any(.assets[]?; .name == "manifests.yaml")) | .tag_name | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))')
+
+          missing=""
+          while IFS= read -r version; do
+            [[ -z "${version}" ]] && continue
+            if [[ $(printf '%s\n%s\n' "${MINIMUM_VERSION}" "${version}" | sort -V | head -n1) != "${MINIMUM_VERSION}" ]]; then
+              continue
+            fi
+
+            chart_version=${version#v}
+            if ! helm show chart "oci://ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/charts/gateway-api-inference-extension-crds" --version "${chart_version}" >/dev/null 2>&1; then
+              missing+="${version}"$'\n'
+            fi
+          done <<<"${releases}"
+
+          versions=$(printf '%s' "${missing}" | jq -Rsc 'split("\n") | map(select(length > 0))')
+          echo "versions=${versions}" >>"${GITHUB_OUTPUT}"
+          if [[ ${versions} == "[]" ]]; then
+            echo "found=false" >>"${GITHUB_OUTPUT}"
+          else
+            echo "found=true" >>"${GITHUB_OUTPUT}"
+          fi
+          echo "Missing versions: ${versions}"
+
+  publish:
+    needs: detect
+    if: needs.detect.outputs.found == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.detect.outputs.versions) }}
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/publish.yaml
+    with:
+      version: ${{ matrix.version }}
+    secrets: inherit

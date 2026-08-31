@@ -1,0 +1,12 @@
+apiVersion: v2
+name: gateway-api-inference-extension-crds
+description: Gateway API Inference Extension CRDs packaged as a Helm chart
+type: application
+version: 0.0.0
+appVersion: development
+home: https://github.com/kubernetes-sigs/gateway-api-inference-extension
+sources:
+  - https://github.com/kubernetes-sigs/gateway-api-inference-extension
+annotations:
+  org.opencontainers.image.source: https://github.com/sohooo/gateway-api-inference-extension-helm
+  org.opencontainers.image.description: Gateway API Inference Extension CRDs
