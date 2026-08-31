@@ -4,6 +4,8 @@ This project packages the official `manifests.yaml` CRD bundle from
 [Gateway API Inference Extension releases](https://github.com/kubernetes-sigs/gateway-api-inference-extension/releases)
 as a version-matched Helm chart and publishes it to GitHub Container Registry.
 
+[Browse all published chart versions on GitHub Packages.](https://github.com/sohooo/gateway-api-inference-extension-helm/pkgs/container/charts%2Fgateway-api-inference-extension-crds)
+
 ## Install
 
 Choose the upstream release with Helm's chart version:
