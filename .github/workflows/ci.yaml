@@ -34,8 +34,10 @@ jobs:
 
       - name: Verify CRDs
         run: |
-          kubectl get crd inferencepoolimports.inference.networking.x-k8s.io
-          kubectl get crd inferencepools.inference.networking.x-k8s.io
+          kubectl wait --for=create --timeout=60s crd/inferencepoolimports.inference.networking.x-k8s.io
+          kubectl wait --for=create --timeout=60s crd/inferencepools.inference.networking.x-k8s.io
+          kubectl wait --for=condition=Established --timeout=60s crd/inferencepoolimports.inference.networking.x-k8s.io
+          kubectl wait --for=condition=Established --timeout=60s crd/inferencepools.inference.networking.x-k8s.io
 
       - name: Verify uninstall retains CRDs
         run: |
