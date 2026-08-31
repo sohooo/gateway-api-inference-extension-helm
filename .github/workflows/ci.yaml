@@ -30,10 +30,12 @@ jobs:
         uses: helm/kind-action@v1
 
       - name: Install chart
-        run: helm install inference-extension-crds dist/gateway-api-inference-extension-crds-1.6.0.tgz
+        run: helm install --debug inference-extension-crds dist/gateway-api-inference-extension-crds-1.6.0.tgz
 
       - name: Verify CRDs
         run: |
+          helm get manifest inference-extension-crds | kubectl apply --server-side --dry-run=server -f -
+          kubectl get crd
           kubectl wait --for=create --timeout=60s crd/inferencepoolimports.inference.networking.x-k8s.io
           kubectl wait --for=create --timeout=60s crd/inferencepools.inference.networking.x-k8s.io
           kubectl wait --for=condition=Established --timeout=60s crd/inferencepoolimports.inference.networking.x-k8s.io
