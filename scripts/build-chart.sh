@@ -68,6 +68,8 @@ fi
   --expected-version "${upstream_version}" \
   "${manifest}"
 
+"${script_directory}/split_manifest.rb" "${manifest}" "${staged_chart}"
+
 if command -v sha256sum >/dev/null 2>&1; then
   manifest_checksum=$(sha256sum "${manifest}" | awk '{print $1}')
 else
