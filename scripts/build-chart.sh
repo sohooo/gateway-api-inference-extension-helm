@@ -48,10 +48,10 @@ temporary_directory=$(mktemp -d)
 trap 'rm -rf -- "${temporary_directory}"' EXIT
 
 staged_chart="${temporary_directory}/gateway-api-inference-extension-crds"
-mkdir -p "${staged_chart}/files"
+mkdir -p "${staged_chart}/crds" "${staged_chart}/files"
 cp -R "${chart_source}/." "${staged_chart}/"
 
-manifest="${staged_chart}/files/manifests.yaml"
+manifest="${staged_chart}/crds/manifests.yaml"
 source_repository=${UPSTREAM_REPOSITORY:-kubernetes-sigs/gateway-api-inference-extension}
 source_url="https://github.com/${source_repository}/releases/download/${upstream_version}/manifests.yaml"
 
@@ -67,8 +67,6 @@ fi
 "${script_directory}/validate_manifest.rb" \
   --expected-version "${upstream_version}" \
   "${manifest}"
-
-"${script_directory}/split_manifest.rb" "${manifest}" "${staged_chart}"
 
 if command -v sha256sum >/dev/null 2>&1; then
   manifest_checksum=$(sha256sum "${manifest}" | awk '{print $1}')
