@@ -19,6 +19,8 @@ jobs:
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
+        with:
+          version: v3.21.4
 
       - name: Check shell scripts
         run: shellcheck scripts/*.sh
