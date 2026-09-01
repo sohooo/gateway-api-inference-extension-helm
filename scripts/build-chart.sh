@@ -82,9 +82,8 @@ printf '%s\n' "${source_url}" >"${staged_chart}/files/manifests.yaml.url"
 helm lint "${staged_chart}"
 
 rendered_manifest="${temporary_directory}/rendered.yaml"
-helm template validation "${staged_chart}" >"${rendered_manifest}"
+helm template validation "${staged_chart}" --include-crds >"${rendered_manifest}"
 "${script_directory}/validate_manifest.rb" \
-  --require-keep \
   --compare-to "${manifest}" \
   "${rendered_manifest}"
 

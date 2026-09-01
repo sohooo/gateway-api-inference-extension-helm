@@ -1,3 +1,2 @@
-crds:
-  # Install and manage the Gateway API Inference Extension CRDs.
-  enabled: true
+# This chart has no configurable values. Select the CRD release with the chart
+# version and use Helm's --skip-crds flag when CRD installation is not wanted.

@@ -16,9 +16,17 @@ helm upgrade --install inference-extension-crds \
   --version 1.6.0
 ```
 
-CRD installation can be disabled with `--set crds.enabled=false`. The CRDs are
-annotated with `helm.sh/resource-policy: keep`, so uninstalling the chart does
-not delete CRDs or existing custom resources.
+CRD installation can be disabled with Helm's `--skip-crds` flag. Helm retains
+CRDs when the chart is uninstalled, protecting existing custom resources.
+
+Helm does not upgrade resources in a chart's `crds/` directory. Apply a newer
+chart's CRDs explicitly before upgrading the release:
+
+```bash
+helm show crds \
+  oci://ghcr.io/sohooo/charts/gateway-api-inference-extension-crds \
+  --version 1.6.0 | kubectl apply --server-side -f -
+```
 
 ## Build locally
 
