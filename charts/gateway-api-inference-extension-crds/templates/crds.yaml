@@ -8,6 +8,7 @@
 {{- $_ := set $annotations "helm.sh/resource-policy" "keep" }}
 {{- $_ := set $metadata "annotations" $annotations }}
 {{- $_ := set $resource "metadata" $metadata }}
+{{- $_ := unset $resource "status" }}
 ---
 {{ toYaml $resource }}
 {{- end }}

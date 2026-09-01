@@ -96,6 +96,7 @@ if options[:compare_to]
 
   normalize = lambda do |document|
     copy = Marshal.load(Marshal.dump(document))
+    copy.delete("status")
     annotations = copy.dig("metadata", "annotations")
     annotations.delete(KEEP_ANNOTATION) if annotations.is_a?(Hash)
     copy
