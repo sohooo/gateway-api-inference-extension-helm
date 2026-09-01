@@ -32,7 +32,7 @@ jobs:
         uses: helm/kind-action@v1
 
       - name: Install chart
-        run: helm install inference-extension-crds dist/gateway-api-inference-extension-crds-1.6.0.tgz
+        run: helm --qps 1 --burst-limit 1 install inference-extension-crds dist/gateway-api-inference-extension-crds-1.6.0.tgz
 
       - name: Verify CRDs
         run: |
