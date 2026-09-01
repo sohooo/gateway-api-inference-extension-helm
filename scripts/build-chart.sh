@@ -48,10 +48,10 @@ temporary_directory=$(mktemp -d)
 trap 'rm -rf -- "${temporary_directory}"' EXIT
 
 staged_chart="${temporary_directory}/gateway-api-inference-extension-crds"
-mkdir -p "${staged_chart}/crds" "${staged_chart}/files"
+mkdir -p "${staged_chart}/files"
 cp -R "${chart_source}/." "${staged_chart}/"
 
-manifest="${staged_chart}/crds/manifests.yaml"
+manifest="${staged_chart}/files/manifests.yaml"
 source_repository=${UPSTREAM_REPOSITORY:-kubernetes-sigs/gateway-api-inference-extension}
 source_url="https://github.com/${source_repository}/releases/download/${upstream_version}/manifests.yaml"
 
@@ -80,8 +80,9 @@ printf '%s\n' "${source_url}" >"${staged_chart}/files/manifests.yaml.url"
 helm lint "${staged_chart}"
 
 rendered_manifest="${temporary_directory}/rendered.yaml"
-helm template validation "${staged_chart}" --include-crds >"${rendered_manifest}"
+helm template validation "${staged_chart}" >"${rendered_manifest}"
 "${script_directory}/validate_manifest.rb" \
+  --require-keep \
   --compare-to "${manifest}" \
   "${rendered_manifest}"
 

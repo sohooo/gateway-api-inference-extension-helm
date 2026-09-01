@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "crds": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Install and manage the Gateway API Inference Extension CRDs."
+        }
+      },
+      "required": ["enabled"]
+    }
+  },
+  "required": ["crds"]
+}
