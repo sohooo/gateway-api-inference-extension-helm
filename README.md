@@ -31,6 +31,8 @@ scripts/build-chart.sh v1.6.0
 The chart is written to `dist/`. It contains the downloaded upstream manifest,
 its source URL, and its SHA-256 checksum.
 
+CI builds and validates the chart with pinned Helm 3 and Helm 4 releases.
+
 ## Releases
 
 GitHub Actions checks the upstream repository every six hours and publishes one
