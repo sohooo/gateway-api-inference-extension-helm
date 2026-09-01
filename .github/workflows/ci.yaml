@@ -36,7 +36,7 @@ jobs:
 
       - name: Verify CRDs
         run: |
-          helm get manifest inference-extension-crds | kubectl apply --server-side --dry-run=server -f -
+          helm get manifest inference-extension-crds | kubectl apply --server-side -f -
           for crd in \
             inferencepoolimports.inference.networking.x-k8s.io \
             inferencepools.inference.networking.x-k8s.io; do
