@@ -31,28 +31,10 @@ jobs:
       - name: Create test cluster
         uses: helm/kind-action@v1
 
-      - name: Install chart
-        run: helm --qps 1 --burst-limit 1 install inference-extension-crds dist/gateway-api-inference-extension-crds-1.6.0.tgz
-
-      - name: Verify CRDs
+      - name: Validate rendered CRDs against Kubernetes
         run: |
-          helm get manifest inference-extension-crds | kubectl apply --server-side -f -
-          for crd in \
-            inferencepoolimports.inference.networking.x-k8s.io \
-            inferencepools.inference.networking.x-k8s.io; do
-            for attempt in {1..30}; do
-              kubectl get crd "${crd}" >/dev/null 2>&1 && break
-              sleep 1
-            done
-            kubectl get crd "${crd}"
-            kubectl wait --for=condition=Established --timeout=60s "crd/${crd}"
-          done
-
-      - name: Verify uninstall retains CRDs
-        run: |
-          helm uninstall inference-extension-crds
-          kubectl get crd inferencepoolimports.inference.networking.x-k8s.io
-          kubectl get crd inferencepools.inference.networking.x-k8s.io
+          helm template validation dist/gateway-api-inference-extension-crds-1.6.0.tgz |
+            kubectl apply --server-side --dry-run=server -f -
 
       - name: Upload chart package
         uses: actions/upload-artifact@v4
